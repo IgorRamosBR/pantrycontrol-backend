@@ -16,6 +16,8 @@ func Route(productService services.ProductService) *echo.Echo {
 
 	e.POST("/products", productHandler.SaveProduct)
 	e.GET("/products", productHandler.FindProducts)
+	e.GET("/products/:id", productHandler.FindProductById)
+	e.PUT("/products/:id", productHandler.UpdateProduct)
 
 	return e
 }
