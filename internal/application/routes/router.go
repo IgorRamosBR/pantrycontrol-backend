@@ -2,16 +2,20 @@ package routes
 
 import (
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"pantrycontrol-backend/internal/application/handlers"
+	"pantrycontrol-backend/internal/domain/services"
 )
 
-func Route() *echo.Echo {
+func Route(productService services.ProductService) *echo.Echo {
+	productHandler := handlers.CreateProductHandler(productService)
+
 	e := echo.New()
+	e.Use(middleware.Logger())
 
-	productHandler := handlers.ProductHandler{}
 
-	e.POST("/product", productHandler.SaveProduct)
-	e.GET("/product", productHandler.FindProducts)
+	e.POST("/products", productHandler.SaveProduct)
+	e.GET("/products", productHandler.FindProducts)
 
 	return e
 }

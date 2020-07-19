@@ -1,8 +1,11 @@
 package models
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Product struct {
-	Id string
-	Name string
-	Brand string
-	Category string
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Name     string             `bson:"name,omitempty"`
+	Unit  	 string             `bson:"unit,omitempty"`
+	Brand    string             `bson:"brand,omitempty"`
+	Category string             `bson:"category,omitempty"`
 }
