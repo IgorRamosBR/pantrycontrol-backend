@@ -3,9 +3,12 @@ package handlers
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/gommon/log"
+	"github.com/pkg/errors"
 	"net/http"
-	"pantrycontrol-backend/internal/domain/models"
+	"pantrycontrol-backend/internal/application"
+	"pantrycontrol-backend/internal/domain/models/dto"
 	"pantrycontrol-backend/internal/domain/services"
+	"strconv"
 )
 
 type ProductHandler struct {
@@ -26,24 +29,30 @@ func (h *ProductHandler) FindProducts(c echo.Context) error {
 }
 
 func (h *ProductHandler) FindProductById(c echo.Context) error {
-	id := c.Param("id")
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "id must be a number.")
+	}
 	product, err := h.ProductService.FindProductById(id)
 	if err != nil {
+		if errors.Cause(err) == application.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, "Product not found.")
+		}
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	return c.JSON(http.StatusOK, product)
 }
 
 func (h *ProductHandler) SaveProduct(c echo.Context) error {
-	product := models.Product{}
+	productDTO := dto.ProductDTO{}
 
-	err := c.Bind(&product)
+	err := c.Bind(&productDTO)
 	if err != nil {
-		c.Logger().Error("Error to bind a product.")
-		return c.JSON(http.StatusInternalServerError, err)
+		c.Logger().Error("Error to bind a productDTO.")
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	err = h.ProductService.SaveProduct(product)
+	err = h.ProductService.SaveProduct(productDTO)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -53,16 +62,19 @@ func (h *ProductHandler) SaveProduct(c echo.Context) error {
 }
 
 func (h *ProductHandler) UpdateProduct(c echo.Context) error {
-	id := c.Param("id")
-	product := models.Product{}
-
-	err := c.Bind(&product)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.Logger().Error("Error to bind a product.")
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, "id must be a number.")
+	}
+	productDTO := dto.ProductDTO{}
+
+	err = c.Bind(&productDTO)
+	if err != nil {
+		c.Logger().Error("Error to bind a productDTO.")
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	err = h.ProductService.UpdateProduct(id, product)
+	err = h.ProductService.UpdateProduct(id, productDTO)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -72,10 +84,16 @@ func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 }
 
 func (h *ProductHandler) DeleteProduct(c echo.Context) error {
-	id := c.Param("id")
-
-	err := h.ProductService.DeleteProduct(id)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		return c.JSON(http.StatusBadRequest, "id must be a number.")
+	}
+
+	err = h.ProductService.DeleteProduct(id)
+	if err != nil {
+		if errors.Cause(err) == application.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, "Product not found.")
+		}
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 

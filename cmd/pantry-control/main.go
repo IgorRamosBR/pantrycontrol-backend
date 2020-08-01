@@ -3,22 +3,24 @@ package main
 import (
 	"github.com/labstack/gommon/log"
 	"pantrycontrol-backend/internal/application/routes"
+	"pantrycontrol-backend/internal/domain/repository"
 	"pantrycontrol-backend/internal/domain/services"
 	"pantrycontrol-backend/internal/infra/configuration"
 )
 
 func main() {
-	databaseConfig := configuration.CreateDatabase()
-	database := databaseConfig.Connect("pantry")
-	defer databaseConfig.Disconnect()
+	appConfig := configuration.CreateConfig()
+	database := configuration.CreateDatabase(appConfig.DatabaseUrl)
+	defer database.Close()
 
-	productRepository := database.Collection("products")
+	productRepository := repository.CreateProductRepository(database)
 	productService := services.CreateProductService(productRepository)
 
 	router := routes.Route(productService)
-	err := router.Start(":8080")
+
+	err := router.Start(":" + appConfig.Port)
 	if err != nil {
-		log.Info("Error to start application.")
+		log.Error("Error to start application.", err)
 	}
 }
 
