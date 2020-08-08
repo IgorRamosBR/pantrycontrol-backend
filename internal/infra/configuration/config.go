@@ -23,9 +23,13 @@ func CreateConfig() AppConfig {
 	}
 
 	config := AppConfig{}
-
 	if err := viper.Unmarshal(&config); err != nil {
 		fmt.Printf("Unable to decode into struct, %v", err)
+	}
+
+	databaseUrl := os.Getenv("DATABASE_URL")
+	if databaseUrl != "" {
+		config.DatabaseUrl = databaseUrl + "?sslmode=disable"
 	}
 
 	return config

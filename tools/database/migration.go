@@ -9,7 +9,7 @@ import (
 	"pantrycontrol-backend/internal/infra/configuration"
 )
 
-func migrat() {
+func migration() {
 	appConfig := configuration.CreateConfig()
 
 	m, err := migrate.New(
