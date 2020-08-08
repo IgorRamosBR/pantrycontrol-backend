@@ -1,2 +1,2 @@
 port: 8080
-databaseUrl: postgres://postgres:postgres@localhost:5432/pantry_control
+databaseUrl: postgres://postgres:postgres@localhost:5432/pantry_control?sslmode=disable

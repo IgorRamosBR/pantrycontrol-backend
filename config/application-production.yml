@@ -1,0 +1,2 @@
+port: 8080
+databaseUrl: postgres://qzlmdfnbjzcmhm:d8f61b84cd2ee1300e114dece6d15ebd28300164c98b104c98ed1f1eeeca60f9@ec2-18-210-51-239.compute-1.amazonaws.com:5432/daatva83sc04ej?sslmode=disable

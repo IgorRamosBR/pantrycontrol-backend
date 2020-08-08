@@ -1,0 +1,157 @@
+basePath: /v1
+definitions:
+  dto.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.ProductDTO:
+    properties:
+      brand:
+        type: string
+      category:
+        type: string
+      name:
+        type: string
+      unit:
+        type: string
+    type: object
+  entities.Product:
+    properties:
+      brand:
+        type: string
+      category:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      unit:
+        type: string
+    type: object
+info:
+  contact:
+    email: igorir7@gmail.com
+    name: Igor Pestana
+  description: Documentation from pantry-control-backend.
+  license: {}
+  termsOfService: http://swagger.io/terms/
+  title: Pantry Control Backend
+  version: "1.0"
+paths:
+  /products:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Find products
+      tags:
+      - products
+    post:
+      parameters:
+      - description: Create product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductDTO'
+      produces:
+      - application/json
+      responses:
+        "201": {}
+        "400":
+          description: When request bad formatted
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Save Product
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204": {}
+        "400":
+          description: When request bad formatted
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Delete product
+      tags:
+      - products
+    get:
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Product'
+        "400":
+          description: When request bad formatted
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "404":
+          description: When not found a product
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Find product by id
+      tags:
+      - products
+    put:
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204": {}
+        "400":
+          description: When request bad formatted
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: When a internal error occur.
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Update Product
+      tags:
+      - products
+swagger: "2.0"

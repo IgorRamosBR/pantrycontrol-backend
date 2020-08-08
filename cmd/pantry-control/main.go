@@ -8,6 +8,15 @@ import (
 	"pantrycontrol-backend/internal/infra/configuration"
 )
 
+// @title Pantry Control Backend
+// @version 1.0
+// @description Documentation from pantry-control-backend.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Igor Pestana
+// @contact.email igorir7@gmail.com
+// @BasePath /v1
+
 func main() {
 	appConfig := configuration.CreateConfig()
 	database := configuration.CreateDatabase(appConfig.DatabaseUrl)

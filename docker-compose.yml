@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  postgres:
+    container_name: postgres
+    image: sameersbn/postgresql:9.6-2
+    hostname: postgres
+    ports:
+    - 5432:5432
+    environment:
+    - DB_NAME=pantry_control
+    - PG_PASSWORD=postgres
