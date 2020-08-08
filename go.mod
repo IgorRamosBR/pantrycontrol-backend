@@ -24,6 +24,6 @@ require (
 	golang.org/x/tools v0.0.0-20200731060945-b5fad4ed8dd6 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 
-// +heroku install github.com/spf13/viper v1.7.1
+// +heroku install github.com/spf13/viper
 // +heroku goVersion 1.13
 )
