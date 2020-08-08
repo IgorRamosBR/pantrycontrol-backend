@@ -32,6 +32,11 @@ func CreateConfig() AppConfig {
 		config.DatabaseUrl = databaseUrl + "?sslmode=disable"
 	}
 
+	port := os.Getenv("PORT")
+	if port != "" {
+		config.Port = port
+	}
+
 	return config
 }
 
