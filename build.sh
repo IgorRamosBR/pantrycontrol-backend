@@ -1,4 +1,4 @@
-zip#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -xe
 
 # install packages and dependencies
