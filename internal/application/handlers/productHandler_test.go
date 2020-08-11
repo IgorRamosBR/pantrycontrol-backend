@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/golang/mock/gomock"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -130,7 +130,7 @@ func TestProductHandler_FindProductById_Id_NotFound(t *testing.T) {
 	c.SetParamValues("123")
 
 	if assert.NoError(t, productHandler.FindProductById(c)) {
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, http.StatusNotFound, rec.Code)
 	}
 }
 

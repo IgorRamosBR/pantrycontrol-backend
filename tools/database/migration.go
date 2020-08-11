@@ -1,4 +1,4 @@
-package migrat
+package main
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 	"pantrycontrol-backend/internal/infra/configuration"
 )
 
-func migration() {
+func main() {
 	appConfig := configuration.CreateConfig()
 
 	m, err := migrate.New(
