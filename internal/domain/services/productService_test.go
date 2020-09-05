@@ -5,12 +5,16 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"pantrycontrol-backend/internal/application"
-	"pantrycontrol-backend/internal/domain/models/dto"
-	"pantrycontrol-backend/internal/domain/models/entities"
+	"pantrycontrol-backend/internal/domain/dto"
+	"pantrycontrol-backend/internal/domain/entities"
 	mock_repository "pantrycontrol-backend/internal/domain/repository/mocks"
 	"testing"
 )
+
+
+var id = primitive.NewObjectID()
 
 func TestProductServiceImpl_FindProducts(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -47,10 +51,10 @@ func TestProductServiceImpl_FindProductById(t *testing.T) {
 
 	product := createProduct()
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().FindById(123).Return(product, nil)
+	productRepository.EXPECT().FindById(id.String()).Return(product, nil)
 	productService := CreateProductService(productRepository)
 
-	productFound, err := productService.FindProductById(123)
+	productFound, err := productService.FindProductById(id.String())
 
 	assert.Nil(t, err)
 	assert.Equal(t, product, productFound)
@@ -61,10 +65,10 @@ func TestProductServiceImpl_FindProductById_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().FindById(123).Return(entities.Product{}, pg.ErrNoRows)
+	productRepository.EXPECT().FindById(id.String()).Return(entities.Product{}, pg.ErrNoRows)
 	productService := CreateProductService(productRepository)
 
-	_, err := productService.FindProductById(123)
+	_, err := productService.FindProductById(id.String())
 
 	assert.NotNil(t, err)
 	assert.Equal(t, application.ErrNotFound, err)
@@ -75,10 +79,10 @@ func TestProductServiceImpl_FindProductById_Error(t *testing.T) {
 	defer ctrl.Finish()
 
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().FindById(123).Return(entities.Product{}, errors.New("Erro interno."))
+	productRepository.EXPECT().FindById(id.String()).Return(entities.Product{}, errors.New("Erro interno."))
 	productService := CreateProductService(productRepository)
 
-	_, err := productService.FindProductById(123)
+	_, err := productService.FindProductById(id.String())
 
 	assert.NotNil(t, err)
 }
@@ -123,10 +127,10 @@ func TestProductServiceImpl_UpdateProduct(t *testing.T) {
 	productDto := dto.ProductDTO{Name: "Arroz", Unit: "kg", Brand: "Carreteiro", Category: "Alimentos Básicos"}
 
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().Update(123, product).Return(nil)
+	productRepository.EXPECT().Update(id.String(), product).Return(nil)
 	productService := CreateProductService(productRepository)
 
-	err := productService.UpdateProduct(123, productDto)
+	err := productService.UpdateProduct(id.String(), productDto)
 
 	assert.Nil(t, err)
 }
@@ -139,10 +143,10 @@ func TestProductServiceImpl_UpdateProduct_Error(t *testing.T) {
 	productDto := dto.ProductDTO{Name: "Arroz", Unit: "kg", Brand: "Carreteiro", Category: "Alimentos Básicos"}
 
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().Update(123, product).Return(errors.New("Erro interno."))
+	productRepository.EXPECT().Update(id.String(), product).Return(errors.New("Erro interno."))
 	productService := CreateProductService(productRepository)
 
-	err := productService.UpdateProduct(123, productDto)
+	err := productService.UpdateProduct(id.String(), productDto)
 
 	assert.NotNil(t, err)
 }
@@ -152,10 +156,10 @@ func TestProductServiceImpl_DeleteProduct(t *testing.T) {
 	defer ctrl.Finish()
 
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().Delete(123).Return(nil)
+	productRepository.EXPECT().Delete(id.String()).Return(nil)
 	productService := CreateProductService(productRepository)
 
-	err := productService.DeleteProduct(123)
+	err := productService.DeleteProduct(id.String())
 
 	assert.Nil(t, err)
 }
@@ -165,17 +169,17 @@ func TestProductServiceImpl_DeleteProduct_Error(t *testing.T) {
 	defer ctrl.Finish()
 
 	productRepository := mock_repository.NewMockProductRepository(ctrl)
-	productRepository.EXPECT().Delete(123).Return(errors.New("Erro interno."))
+	productRepository.EXPECT().Delete(id.String()).Return(errors.New("Erro interno."))
 	productService := CreateProductService(productRepository)
 
-	err := productService.DeleteProduct(123)
+	err := productService.DeleteProduct(id.String())
 
 	assert.NotNil(t, err)
 }
 
 func createProduct() entities.Product {
 	return entities.Product{
-		Id:		   123,
+		ID:		   id,
 		Name:     "Arroz",
 		Unit:     "kg",
 		Brand:    "Carreteiro",

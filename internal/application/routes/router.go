@@ -10,6 +10,7 @@ import (
 
 func Route(productService services.ProductService) *echo.Echo {
 	productHandler := handlers.CreateProductHandler(productService)
+	listHandler := handlers.CreateListHandler()
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -18,6 +19,7 @@ func Route(productService services.ProductService) *echo.Echo {
 	e.GET("/v1/products", productHandler.FindProducts)
 	e.GET("/v1/products/:id", productHandler.FindProductById)
 	e.PUT("/v1/products/:id", productHandler.UpdateProduct)
+	e.POST("/v1/shoppingLists", listHandler.SaveList)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	return e

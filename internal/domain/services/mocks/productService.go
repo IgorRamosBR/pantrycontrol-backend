@@ -6,8 +6,8 @@ package mock_services
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	dto "pantrycontrol-backend/internal/domain/models/dto"
-	entities "pantrycontrol-backend/internal/domain/models/entities"
+	dto "pantrycontrol-backend/internal/domain/dto"
+	entities "pantrycontrol-backend/internal/domain/entities"
 	reflect "reflect"
 )
 
@@ -50,7 +50,7 @@ func (mr *MockProductServiceMockRecorder) FindProducts() *gomock.Call {
 }
 
 // FindProductById mocks base method
-func (m *MockProductService) FindProductById(id int) (entities.Product, error) {
+func (m *MockProductService) FindProductById(id string) (entities.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindProductById", id)
 	ret0, _ := ret[0].(entities.Product)
@@ -79,7 +79,7 @@ func (mr *MockProductServiceMockRecorder) SaveProduct(productDTO interface{}) *g
 }
 
 // UpdateProduct mocks base method
-func (m *MockProductService) UpdateProduct(id int, productDTO dto.ProductDTO) error {
+func (m *MockProductService) UpdateProduct(id string, productDTO dto.ProductDTO) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateProduct", id, productDTO)
 	ret0, _ := ret[0].(error)
@@ -93,7 +93,7 @@ func (mr *MockProductServiceMockRecorder) UpdateProduct(id, productDTO interface
 }
 
 // DeleteProduct mocks base method
-func (m *MockProductService) DeleteProduct(id int) error {
+func (m *MockProductService) DeleteProduct(id string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteProduct", id)
 	ret0, _ := ret[0].(error)

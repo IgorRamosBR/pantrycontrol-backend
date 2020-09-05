@@ -5,17 +5,17 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/pkg/errors"
 	"pantrycontrol-backend/internal/application"
-	"pantrycontrol-backend/internal/domain/models/dto"
-	"pantrycontrol-backend/internal/domain/models/entities"
+	"pantrycontrol-backend/internal/domain/dto"
+	"pantrycontrol-backend/internal/domain/entities"
 	"pantrycontrol-backend/internal/domain/repository"
 )
 
 type ProductService interface {
 	FindProducts() ([]entities.Product, error)
-	FindProductById(id int) (entities.Product, error)
+	FindProductById(id string) (entities.Product, error)
 	SaveProduct(productDTO dto.ProductDTO) error
-	UpdateProduct(id int, productDTO dto.ProductDTO) error
-	DeleteProduct(id int) error
+	UpdateProduct(id string, productDTO dto.ProductDTO) error
+	DeleteProduct(id string) error
 }
 
 type ProductServiceImpl struct {
@@ -38,7 +38,7 @@ func (p *ProductServiceImpl) FindProducts() ([]entities.Product, error) {
 	return products, nil
 }
 
-func (p *ProductServiceImpl) FindProductById(id int) (entities.Product, error) {
+func (p *ProductServiceImpl) FindProductById(id string) (entities.Product, error) {
 	product, err := p.ProductRepository.FindById(id)
 	if err != nil {
 		if errors.Cause(err) == pg.ErrNoRows {
@@ -63,7 +63,7 @@ func (p *ProductServiceImpl) SaveProduct(productDTO dto.ProductDTO) error {
 	return nil
 }
 
-func (p *ProductServiceImpl) UpdateProduct(id int, productDTO dto.ProductDTO) error {
+func (p *ProductServiceImpl) UpdateProduct(id string, productDTO dto.ProductDTO) error {
 	product := productDTO.ToProduct()
 	err := p.ProductRepository.Update(id, product)
 
@@ -74,7 +74,7 @@ func (p *ProductServiceImpl) UpdateProduct(id int, productDTO dto.ProductDTO) er
 	return nil
 }
 
-func (p *ProductServiceImpl) DeleteProduct(id int) error {
+func (p *ProductServiceImpl) DeleteProduct(id string) error {
 	err := p.ProductRepository.Delete(id)
 	if err != nil {
 		log.Error("Error to delete a product.", err)

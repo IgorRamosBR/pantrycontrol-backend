@@ -5,15 +5,18 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"net/http/httptest"
 	"pantrycontrol-backend/internal/application"
-	"pantrycontrol-backend/internal/domain/models/dto"
-	"pantrycontrol-backend/internal/domain/models/entities"
+	"pantrycontrol-backend/internal/domain/dto"
+	"pantrycontrol-backend/internal/domain/entities"
 	mock_services "pantrycontrol-backend/internal/domain/services/mocks"
 	"strings"
 	"testing"
 )
+
+var id = primitive.NewObjectID()
 
 func TestProductHandler_FindProducts(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -56,7 +59,7 @@ func TestProductHandler_FindProductById(t *testing.T) {
 	defer ctrl.Finish()
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().FindProductById(123).Return(createProduct(), nil)
+	productService.EXPECT().FindProductById(id.String()).Return(createProduct(), nil)
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -65,7 +68,7 @@ func TestProductHandler_FindProductById(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.FindProductById(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -77,7 +80,7 @@ func TestProductHandler_FindProductById_Error(t *testing.T) {
 	defer ctrl.Finish()
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().FindProductById(123).Return(entities.Product{}, errors.New("Erro interno."))
+	productService.EXPECT().FindProductById(id.String()).Return(entities.Product{}, errors.New("Erro interno."))
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -86,30 +89,10 @@ func TestProductHandler_FindProductById_Error(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.FindProductById(c)) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-	}
-}
-
-func TestProductHandler_FindProductById_WrongId(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	productService := mock_services.NewMockProductService(ctrl)
-	productHandler := CreateProductHandler(productService)
-
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/products/:id")
-	c.SetParamNames("id")
-	c.SetParamValues("123a")
-
-	if assert.NoError(t, productHandler.FindProductById(c)) {
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -118,7 +101,7 @@ func TestProductHandler_FindProductById_Id_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().FindProductById(123).Return(entities.Product{}, application.ErrNotFound)
+	productService.EXPECT().FindProductById(id.String()).Return(entities.Product{}, application.ErrNotFound)
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -127,7 +110,7 @@ func TestProductHandler_FindProductById_Id_NotFound(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.FindProductById(c)) {
 		assert.Equal(t, http.StatusNotFound, rec.Code)
@@ -221,7 +204,7 @@ func TestProductHandler_UpdateProduct(t *testing.T) {
 	}
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().UpdateProduct(123, productDTO).Return(nil)
+	productService.EXPECT().UpdateProduct(id.String(), productDTO).Return(nil)
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -231,33 +214,10 @@ func TestProductHandler_UpdateProduct(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.UpdateProduct(c)) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
-	}
-}
-
-func TestProductHandler_UpdateProduct_WrongId(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	product := `{"name":"Feijao","unit":"kg","brand":"Maximo","category":"Alimentos Basicos"}`
-
-	productService := mock_services.NewMockProductService(ctrl)
-	productHandler := CreateProductHandler(productService)
-
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(product))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/products/:id")
-	c.SetParamNames("id")
-	c.SetParamValues("123b")
-
-	if assert.NoError(t, productHandler.UpdateProduct(c)) {
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -297,7 +257,7 @@ func TestProductHandler_UpdateProduct_Error(t *testing.T) {
 	}
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().UpdateProduct(123, productDTO).Return(errors.New("Erro interno."))
+	productService.EXPECT().UpdateProduct(id.String(), productDTO).Return(errors.New("Erro interno."))
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -307,7 +267,7 @@ func TestProductHandler_UpdateProduct_Error(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.UpdateProduct(c)) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
@@ -319,7 +279,7 @@ func TestProductHandler_DeleteProduct(t *testing.T) {
 	defer ctrl.Finish()
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().DeleteProduct(123).Return(nil)
+	productService.EXPECT().DeleteProduct(id.String()).Return(nil)
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -329,31 +289,10 @@ func TestProductHandler_DeleteProduct(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.DeleteProduct(c)) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
-	}
-}
-
-func TestProductHandler_DeleteProduct_WrongId(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	productService := mock_services.NewMockProductService(ctrl)
-	productHandler := CreateProductHandler(productService)
-
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodDelete, "/", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/products/:id")
-	c.SetParamNames("id")
-	c.SetParamValues("123b")
-
-	if assert.NoError(t, productHandler.DeleteProduct(c)) {
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -362,7 +301,7 @@ func TestProductHandler_DeleteProduct_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().DeleteProduct(123).Return(application.ErrNotFound)
+	productService.EXPECT().DeleteProduct(id.String()).Return(application.ErrNotFound)
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -372,7 +311,7 @@ func TestProductHandler_DeleteProduct_NotFound(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.DeleteProduct(c)) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
@@ -384,7 +323,7 @@ func TestProductHandler_DeleteProduct_Error(t *testing.T) {
 	defer ctrl.Finish()
 
 	productService := mock_services.NewMockProductService(ctrl)
-	productService.EXPECT().DeleteProduct(123).Return(errors.New("Erro interno."))
+	productService.EXPECT().DeleteProduct(id.String()).Return(errors.New("Erro interno."))
 	productHandler := CreateProductHandler(productService)
 
 	e := echo.New()
@@ -394,7 +333,7 @@ func TestProductHandler_DeleteProduct_Error(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetPath("/products/:id")
 	c.SetParamNames("id")
-	c.SetParamValues("123")
+	c.SetParamValues(id.String())
 
 	if assert.NoError(t, productHandler.DeleteProduct(c)) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
@@ -403,7 +342,7 @@ func TestProductHandler_DeleteProduct_Error(t *testing.T) {
 
 func createProduct() entities.Product {
 	return entities.Product{
-		Id:		   123,
+		ID:       id,
 		Name:     "Arroz",
 		Unit:     "kg",
 		Brand:    "Carreteiro",

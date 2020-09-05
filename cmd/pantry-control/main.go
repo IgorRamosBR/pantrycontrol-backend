@@ -18,16 +18,18 @@ import (
 // @BasePath /v1
 
 func main() {
-	appConfig := configuration.CreateConfig()
-	database := configuration.CreateDatabase(appConfig.DatabaseUrl)
-	defer database.Close()
+	databaseConfig := configuration.CreateDatabase()
+	database := databaseConfig.Connect("pantry")
+	defer databaseConfig.Disconnect()
 
-	productRepository := repository.CreateProductRepository(database)
+	productCollection := database.Collection("products")
+
+	productRepository := repository.CreateProductRepository(productCollection)
 	productService := services.CreateProductService(productRepository)
 
 	router := routes.Route(productService)
 
-	err := router.Start(":" + appConfig.Port)
+	err := router.Start(":8080")
 	if err != nil {
 		log.Error("Error to start application.", err)
 	}

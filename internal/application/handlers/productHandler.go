@@ -9,9 +9,8 @@ import (
 	"github.com/pkg/errors"
 	"net/http"
 	"pantrycontrol-backend/internal/application"
-	"pantrycontrol-backend/internal/domain/models/dto"
+	"pantrycontrol-backend/internal/domain/dto"
 	"pantrycontrol-backend/internal/domain/services"
-	"strconv"
 )
 
 type ProductHandler struct {
@@ -49,10 +48,7 @@ func (h *ProductHandler) FindProducts(c echo.Context) error {
 // @Router /products/{id} [get]
 // @Tags products
 func (h *ProductHandler) FindProductById(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return createErrorResponse(c, http.StatusBadRequest, "id must be a number.")
-	}
+	id := c.Param("id")
 	product, err := h.ProductService.FindProductById(id)
 	if err != nil {
 		if errors.Cause(err) == application.ErrNotFound {
@@ -100,13 +96,10 @@ func (h *ProductHandler) SaveProduct(c echo.Context) error {
 // @Router /products/{id} [put]
 // @Tags products
 func (h *ProductHandler) UpdateProduct(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return createErrorResponse(c, http.StatusBadRequest, "id must be a number.")
-	}
+	id := c.Param("id")
 	productDTO := dto.ProductDTO{}
 
-	err = c.Bind(&productDTO)
+	err := c.Bind(&productDTO)
 	if err != nil {
 		c.Logger().Error("Error to bind a productDTO.")
 		return createErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -131,12 +124,9 @@ func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 // @Router /products/{id} [delete]
 // @Tags products
 func (h *ProductHandler) DeleteProduct(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return createErrorResponse(c, http.StatusBadRequest, "id must be a number.")
-	}
+	id := c.Param("id")
 
-	err = h.ProductService.DeleteProduct(id)
+	err := h.ProductService.DeleteProduct(id)
 	if err != nil {
 		if errors.Cause(err) == application.ErrNotFound {
 			return createErrorResponse(c, http.StatusBadRequest, "Product not found.")

@@ -6,7 +6,7 @@ package mock_repository
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	entities "pantrycontrol-backend/internal/domain/models/entities"
+	entities "pantrycontrol-backend/internal/domain/entities"
 	reflect "reflect"
 )
 
@@ -49,7 +49,7 @@ func (mr *MockProductRepositoryMockRecorder) FindAll() *gomock.Call {
 }
 
 // FindById mocks base method
-func (m *MockProductRepository) FindById(arg0 int) (entities.Product, error) {
+func (m *MockProductRepository) FindById(arg0 string) (entities.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindById", arg0)
 	ret0, _ := ret[0].(entities.Product)
@@ -78,7 +78,7 @@ func (mr *MockProductRepositoryMockRecorder) Save(arg0 interface{}) *gomock.Call
 }
 
 // Update mocks base method
-func (m *MockProductRepository) Update(arg0 int, arg1 entities.Product) error {
+func (m *MockProductRepository) Update(arg0 string, arg1 entities.Product) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -92,7 +92,7 @@ func (mr *MockProductRepositoryMockRecorder) Update(arg0, arg1 interface{}) *gom
 }
 
 // Delete mocks base method
-func (m *MockProductRepository) Delete(arg0 int) error {
+func (m *MockProductRepository) Delete(arg0 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0)
 	ret0, _ := ret[0].(error)

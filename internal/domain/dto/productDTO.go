@@ -1,6 +1,6 @@
 package dto
 
-import "pantrycontrol-backend/internal/domain/models/entities"
+import "pantrycontrol-backend/internal/domain/entities"
 
 type ProductDTO struct {
 	Name      string `json:"name"`

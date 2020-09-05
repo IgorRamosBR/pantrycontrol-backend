@@ -1,14 +1,34 @@
 package configuration
 
 import (
-	"github.com/go-pg/pg/v10"
+	"context"
+	"github.com/labstack/gommon/log"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
-func CreateDatabase(url string) *pg.DB {
-	opt, err := pg.ParseURL(url)
+type DatabaseConfiguration struct {
+	ctx    context.Context
+	client *mongo.Client
+}
+
+func CreateDatabase() DatabaseConfiguration {
+	ctx, _  := context.WithTimeout(context.Background(), 10*time.Second)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
-		panic(err)
+		log.Panic("Error to connect MongoDb")
 	}
 
-	return pg.Connect(opt)
+	return DatabaseConfiguration{ctx: ctx, client: client}
+}
+
+func (d *DatabaseConfiguration) Connect(name string) *mongo.Database {
+	database := d.client.Database(name)
+	log.Info("Connected to MongoDB!")
+	return database
+}
+
+func (d *DatabaseConfiguration) Disconnect()  {
+	d.Disconnect()
 }
